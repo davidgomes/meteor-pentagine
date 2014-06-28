@@ -1,25 +1,71 @@
-function GameState () {
-  this.setup = function () { };
+function GameState() {
+  this.setup = function() {
+    this.helicopter = new penta.Sprite("helicopter1.png",
+                                       100, penta.context.height / 2 - 100);
 
-  this.update = function () {
-    if (penta.isMouseDown('left')) {
-      var newCircle = { x: penta.getMouseX(),
-                        y: penta.getMouseY(),
-                        radius: 50,
-                        color: '#ff00ff' };
+    this.helicopter.vy = 5;
+    this.walls = [];
+    this.walls[penta.context.width - 1] = 20;
+    this.speed = 30;
 
-      Circles.insert(newCircle);
-      
-      penta.drawCircle(newCircle.x, newCircle.y,
-                       newCircle.radius, newCircle.color);
-    }
+    this.difficulty = 50;
+    this.score = 0;
   };
 
-  this.draw = function () {
-    _.each(Circles.find({ }).fetch(), function (circle) {
-      penta.drawCircle(circle.x, circle.y, circle.radius,
-                       circle.color);
-    });
+  this.update = function() {
+    if (penta.isDown("up") || penta.isDown("w"))
+      this.helicopter.y -= 400 * this.dt;
+
+    if (penta.isDown("down") || penta.isDown("s"))
+      this.helicopter.y += 200 * this.dt;
+
+    for (var i = 2; i < this.walls.length - this.speed; i++) {
+      for (var u = 0; u < this.speed; u++) {
+        this.walls[i + u] = this.walls[i + u + 1];
+      }
+    }
+
+    if (this.walls.length == penta.context.width) {
+      if (Math.floor(Math.random() * 5) > 1) {
+        this.walls[this.walls.length - 1] = this.difficulty + Math.floor(Math.random() * 5) + 1;
+      } else {
+        this.walls[this.walls.length - 1] = this.difficulty - Math.floor(Math.random() * 5) - 1;
+      }
+    }
+
+    /* Dirty fix */
+    this.walls[1] = this.walls[2];
+    this.walls[0] = this.walls[1];
+
+    // this.helicopter.y += 100 * this.dt;
+
+    if (this.difficulty < 160) {
+      this.difficulty += 1;
+    } else {
+      if (getRandomInt(0, 1) == 0) {
+        this.difficulty += 0.1;
+      } else {
+        this.difficulty -= 0.1;
+      }
+    }
+
+    this.score++;
+  };
+
+  this.draw = function() {
+    penta.clearCanvas();
+
+    currentFont = "10px arial";
+    penta.drawString("Score: " + this.score.toString(), 2, 10, "#FFF");
+    penta.drawString("Delta Time: " + Math.floor((this.dt * 1000).toString()) + "ms", 2, 20, "#FFF");
+    penta.drawString("FPS: " + Math.floor((1 / this.dt).toString()) + "", 2, 30, "#FFF");
+
+    for (var i = 0; i < this.walls.length; i++) {
+      penta.drawRectangle(i, 0, 1, this.walls[i], "#123");
+      penta.drawRectangle(i, penta.context.height - this.walls[i], 1, this.walls[i], "#123");
+    }
+
+    this.helicopter.draw(penta.context);
   };
 }
 
