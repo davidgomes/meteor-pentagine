@@ -3,7 +3,7 @@ function GameState() {
     this.helicopter = new penta.Sprite("helicopter1.png",
                                        100, penta.context.height / 2 - 100);
 
-    this.helicopter.vy = 5;
+	this.helicopter.speed = 400;
     this.walls = [];
     this.walls[penta.context.width - 1] = 20;
     this.speed = 30;
@@ -14,10 +14,10 @@ function GameState() {
 
   this.update = function() {
     if (penta.isDown("up") || penta.isDown("w"))
-      this.helicopter.y -= 200 * this.dt;
+      this.helicopter.y -= this.helicopter.speed * this.dt;
 
     if (penta.isDown("down") || penta.isDown("s"))
-      this.helicopter.y += 200 * this.dt;
+      this.helicopter.y += this.helicopter.speed * this.dt;
 
     for (var i = 2; i < this.walls.length - this.speed; i++) {
       for (var u = 0; u < this.speed; u++) {
