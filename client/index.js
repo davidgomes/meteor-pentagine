@@ -14,7 +14,7 @@ function GameState() {
 
   this.update = function() {
     if (penta.isDown("up") || penta.isDown("w"))
-      this.helicopter.y -= 400 * this.dt;
+      this.helicopter.y -= 200 * this.dt;
 
     if (penta.isDown("down") || penta.isDown("s"))
       this.helicopter.y += 200 * this.dt;
